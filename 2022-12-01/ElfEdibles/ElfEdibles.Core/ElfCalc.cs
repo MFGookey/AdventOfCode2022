@@ -15,7 +15,12 @@ namespace ElfEdibles.Core
 
     public Elf FindSnackPackingestElf()
     {
-      return _elves.OrderByDescending((e) => e.GetCaloriesCarried()).First();
+      return FindNthSnackPackingestElf(0);
+    }
+
+    public Elf FindNthSnackPackingestElf(int skip)
+    {
+      return _elves.OrderByDescending((e) => e.GetCaloriesCarried()).Skip(skip).FirstOrDefault();
     }
   }
 }

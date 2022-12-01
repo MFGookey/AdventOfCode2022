@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Common.Utilities.IO;
 using ElfEdibles.Core;
 
@@ -20,6 +21,8 @@ namespace ElfEdibles.Cmd
 
       var calc = new ElfCalc(reader.ReadFile(filePath));
       Console.WriteLine(calc.FindSnackPackingestElf().GetCaloriesCarried());
+
+      Console.WriteLine(Enumerable.Range(0, 3).Select(x => calc.FindNthSnackPackingestElf(x).GetCaloriesCarried()).Sum());
       _ = Console.ReadLine();
     }
   }
