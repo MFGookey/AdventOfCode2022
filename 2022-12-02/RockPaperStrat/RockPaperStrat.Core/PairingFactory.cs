@@ -36,6 +36,20 @@ namespace RockPaperStrat.Core
       return pairings;
     }
 
+    public IEnumerable<Pairing> ParseDirectedStrategy(string strategy)
+    {
+      var strategems = strategy.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+      var pairings = new Queue<Pairing>();
+
+      foreach (var strategem in strategems)
+      {
+        pairings.Enqueue(this.ParseDirectedStrategem(strategem));
+      }
+
+      return pairings;
+    }
+
     public Pairing ParseStrategem(string strategem)
     {
       var moves = strategem.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -44,8 +58,8 @@ namespace RockPaperStrat.Core
         throw new ArgumentException($"strategem must be of the form \"x y\" where x and y are single characters and are separated by a single space.  Supplied strategem: \"{strategem}\"");
       }
 
-      var opponentMove = MapMove(moves[0].ToCharArray()[0], _opponentMoveMapping);
-      var playerMove = MapMove(moves[1].ToCharArray()[0], _playerMoveMapping);
+      var opponentMove = PairingFactory.MapMove(moves[0].ToCharArray()[0], _opponentMoveMapping);
+      var playerMove = PairingFactory.MapMove(moves[1].ToCharArray()[0], _playerMoveMapping);
 
       return new Pairing(playerMove, opponentMove);
     }
@@ -72,6 +86,64 @@ namespace RockPaperStrat.Core
       }
 
       throw new ArgumentOutOfRangeException(nameof(unmappedMove));
+    }
+
+    public Pairing ParseDirectedStrategem(string strategem)
+    {
+      var moves = strategem.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+      if (moves.Length != 2 || moves.Any(m => m.Length != 1))
+      {
+        throw new ArgumentException($"strategem must be of the form \"x y\" where x and y are single characters and are separated by a single space.  Supplied strategem: \"{strategem}\"");
+      }
+
+      var opponentMove = PairingFactory.MapMove(moves[0].ToCharArray()[0], _opponentMoveMapping);
+      var playerMove = PairingFactory.MapDirectedMove(opponentMove, moves[1].ToCharArray()[0]);
+      return new Pairing(playerMove, opponentMove);
+    }
+
+    private static Move MapDirectedMove(Move opponentMove, char unMappedMove)
+    {
+      if (unMappedMove == 'Y')
+      {
+        return opponentMove;
+      } 
+
+      switch (opponentMove)
+      {
+        case Move.Rock:
+          switch (unMappedMove)
+          {
+            case 'X':
+              return Move.Scissors;
+            case 'Z':
+              return Move.Paper;
+            default:
+              throw new ArgumentOutOfRangeException(nameof(unMappedMove));
+          }
+        case Move.Paper:
+          switch (unMappedMove)
+          {
+            case 'X':
+              return Move.Rock;
+            case 'Z':
+              return Move.Scissors;
+            default:
+              throw new ArgumentOutOfRangeException(nameof(unMappedMove));
+          }
+        case Move.Scissors:
+          switch (unMappedMove)
+          {
+            case 'X':
+              return Move.Paper;
+            case 'Z':
+              return Move.Rock;
+            default:
+              throw new ArgumentOutOfRangeException(nameof(unMappedMove));
+          }
+
+        default:
+          throw new ArgumentOutOfRangeException(nameof(opponentMove));
+      }
     }
   }
 }

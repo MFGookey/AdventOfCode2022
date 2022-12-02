@@ -20,9 +20,12 @@ namespace RockPaperStrat.Cmd
       var reader = new FileReader();
       var pairingFactory = new PairingFactory();
       var evaluator = new PairingEvaluator();
-
-      var pairings = pairingFactory.ParseStrategy(reader.ReadFile(filePath));
+      var fileContent = reader.ReadFile(filePath);
+      var pairings = pairingFactory.ParseStrategy(fileContent);
       Console.WriteLine(pairings.Select(p => evaluator.EvaluateScore(p)).Sum());
+
+      var directedPairings = pairingFactory.ParseDirectedStrategy(fileContent);
+      Console.WriteLine(directedPairings.Select(p => evaluator.EvaluateScore(p)).Sum());
       _ = Console.ReadLine();
     }
   }
