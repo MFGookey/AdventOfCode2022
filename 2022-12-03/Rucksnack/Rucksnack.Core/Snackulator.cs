@@ -41,5 +41,16 @@ namespace Rucksnack.Core
       }
       return rawScore;
     }
+
+    public static char FindCommonItem(IEnumerable<string> toSearch)
+    {
+      char? result = toSearch.SelectMany(d => d.ToCharArray().Distinct()).GroupBy(d => d).Where(g => g.Count() == toSearch.Count()).FirstOrDefault()?.Key ?? null;
+      if (result.HasValue)
+      {
+        return result.Value;
+      }
+
+      throw new ArgumentException("No common characters");
+    }
   }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Common.Utilities.IO;
 using Rucksnack.Core;
 
@@ -27,7 +29,24 @@ namespace Rucksnack.Cmd
 
       Console.WriteLine(sum);
 
+      var groups = MakeGroups(rucksacks, 3);
+
+      sum = 0;
+
+      foreach (var group in groups)
+      {
+        var badge = Snackulator.FindCommonItem(group);
+        sum += Snackulator.Score(badge);
+      }
+
+      Console.WriteLine(sum);
+
       _ = Console.ReadLine();
+    }
+
+    private static IEnumerable<IEnumerable<string>> MakeGroups(IEnumerable<string> toGroup, uint groupSize)
+    {
+      return toGroup.Select((v, i) => new { value = v, group = (int)i / groupSize }).GroupBy(d => d.group, o => o.value, (k, g) => g);
     }
   }
 }
