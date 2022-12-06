@@ -7,7 +7,7 @@ namespace SantasRangers.Core
 {
   public static class RangeCalculator
   {
-    public static bool RangesOverlap(string ranges)
+    public static bool RangesFullyOverlap(string ranges)
     {
       var pair = ranges.Split(',', StringSplitOptions.RemoveEmptyEntries).ToArray();
       
@@ -32,6 +32,23 @@ namespace SantasRangers.Core
       }
 
       return Tuple.Create(values[0], values[1]);
+    }
+
+    public static bool RangesOverlap(string ranges)
+    {
+      var pair = ranges.Split(',', StringSplitOptions.RemoveEmptyEntries).ToArray();
+
+      if (pair.Length != 2)
+      {
+        throw new ArgumentException($"Range {ranges} must be two comma separated values");
+      }
+
+      var first = SplitRange(pair[0]);
+      var second = SplitRange(pair[1]);
+
+      return
+        (first.Item1 >= second.Item1 && first.Item1 <= second.Item2) ||
+        (second.Item1 >= first.Item1 && second.Item1 <= first.Item2);
     }
   }
 }
